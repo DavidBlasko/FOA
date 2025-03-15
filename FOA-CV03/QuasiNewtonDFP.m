@@ -4,8 +4,8 @@ clc; clear; close all;
 rosenbrock = @(x) (1 - x(1))^2 + 5 * (x(2) - x(1)^2)^2;
 
 % Gradient - Rosenbrock's function
-grad_rosenbrock = @(x) [-2*(1-x(1)) - 20*x(1)*(x(2) - x(1)^2);
-                         10 * (x(2) - x(1)^2)];
+grad_rosenbrock = @(x) [-2*(1-x(1)) - 20*x(1)*(x(2) - x(1)^2); 10 * (x(2) - x(1)^2)];
+
 % Starting point
 x = [-1; -1];
 
