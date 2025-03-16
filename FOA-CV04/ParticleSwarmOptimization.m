@@ -6,7 +6,7 @@ ackley = @(x) -20*exp(-0.2*sqrt(0.5*(x(1)^2 + x(2)^2))) - exp(0.5*(cos(2*pi*x(1)
 % Params
 pop_size = 10;    
 max_iter = 100;  
-max_func_calls = 1000;
+max_f_calls = 1000;
 w = 0.9;                        % Inertia weight
 c1 = 1.2;                       % Cognitive coefficient
 c2 = 1.2;                       % Social coefficient
@@ -22,19 +22,18 @@ g_best = p_best(best_idx, :);
 func_calls = pop_size;
 
 %% Plotting setup
-[X, Y] = meshgrid(linspace(bounds(1,1), bounds(1,2), 100), linspace(bounds(2,1), bounds(2,2), 100));
-Z = arrayfun(@(x, y) ackley([x, y]), X, Y);
-figure; hold on; grid on;
-contour(X, Y, Z, 20);
-xlabel('x_1'); ylabel('x_2'); title('Particle Swarm Optimization');
-
+[X1, X2] = meshgrid(linspace(-7, 7, 100), linspace(-7, 7, 100));
+F_X = arrayfun(@(x1, x2) ackley([x1, x2]), X1, X2);
+hold on; grid on;
+contour(X1, X2, F_X, 20);
+xlabel('x_1'); ylabel('x_2'); title('Particle Swarm Optimization (PSO)');
 % Initial population
 scatter(pop(:,1), pop(:,2), 25, 'ko', 'filled');
 text(pop(:,1), pop(:,2) + 0.1, 'InitPop');
 
 %% Particle Swarm Optimization Loop
 iter = 0;
-while iter < max_iter && func_calls < max_func_calls
+while iter < max_iter && func_calls < max_f_calls
     r1 = rand(pop_size, 2);
     r2 = rand(pop_size, 2);
 
@@ -68,9 +67,9 @@ while iter < max_iter && func_calls < max_func_calls
 end
 
 % Optimum plot
-scatter(g_best(1), g_best(2), 50, 'bo', 'filled');
+scatter(g_best(1), g_best(2), 35, 'bo', 'filled');
 text(g_best(1), g_best(2) + 0.1, 'Optimum', 'FontWeight', 'bold');
 
 %% Printing results
 fprintf('Optimization completed in %d iterations and %d function calls.\n', iter, func_calls);
-fprintf('Optimum: x = [%.4f, %.4f], f(x) = %.4f\n', g_best(1), g_best(2), g_best_value);
+fprintf('Optimum: x = [%f, %f], f(x) = %f\n', g_best(1), g_best(2), g_best_value);

@@ -2,11 +2,11 @@ clc; clear; close all;
 
 % Objective function - Flower function
 flower_func = @(x) 1 * norm(x) + 1 * sin(4 * atan2(x(2), x(1)));
-% Flower function with penalty to constraint
+% Flower function with penalty - rho to constraint (x1^2 + x2^2 >= 2)
 flower_penalty = @(x, rho) flower_func(x) + rho * max(0, 2 - sum(x.^2));
 
 % Starting point
-x = [-2; -2];
+x0 = [-2; -2];
 
 % Params
 rho_values = [0.5, 1, 5, 10];   % Penalty parameters
@@ -15,14 +15,15 @@ max_f_calls = 1000;             % Max function calls
 tol = 1e-6;                     % Tolerance
 
 % Init
-n = length(x);
-trajectory = x'; % Store trajectory
-iter = 0;
+n = length(x0);
+trajectory = x0'; % Store trajectory
+iter_count = 0;
 f_calls = 0;
 
 %% Cyclic Coordinate Search w/ Penalisation
 for rho = rho_values
-    while iter < max_iter && f_calls < max_f_calls
+    x = x0;
+    while iter_count < max_iter && f_calls < max_f_calls
         x_old = x;
         for i = 1:n
             d = zeros(n, 1); % Direction
@@ -47,19 +48,19 @@ for rho = rho_values
             break;
         end
 
-        iter = iter + 1;
+        iter_count = iter_count + 1;
     end
 end
 
 %% Plotting
-[X1, X2] = meshgrid(-3:0.05:3, -3:0.05:3);
-Z = arrayfun(@(x1, x2) flower_func([x1; x2]), X1, X2);
+[X1, X2] = meshgrid(linspace(-3, 3, 100), linspace(-3, 3, 100));
+F_X = arrayfun(@(x1, x2) flower_func([x1; x2]), X1, X2);
 hold on; grid on;
-contour(X1, X2, Z, 50);
+contour(X1, X2, F_X, 20);
 xlabel('x_1'); ylabel('x_2'); title('Cyclic Coordinate Search w/ Penalisation & Constraints');
 
 % Trajectory points
-scatter(trajectory(:,1), trajectory(:,2), 50, 'rx');
+scatter(trajectory(:,1), trajectory(:,2), 25, 'ro', 'filled');
 % Trajectory line
 plot(trajectory(:,1), trajectory(:,2),'b-');
 % Starting point
@@ -76,5 +77,5 @@ boundary = plot(circle_x, circle_y, 'm-');
 legend(boundary,{'Constraint Boundary'});
 
 %% Printing
-fprintf('Optimization completed in %d iterations and %d function calls.\n', iter, f_calls);
+fprintf('Optimization completed in %d iterations and %d function calls.\n', iter_count, f_calls);
 fprintf('Optimum: x = [%f, %f], f(x) = %f\n', trajectory(end,1), trajectory(end,2), flower_func(trajectory(end, :)));

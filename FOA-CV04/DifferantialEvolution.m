@@ -16,11 +16,11 @@ pop = bounds(:,1)' + (bounds(:,2)' - bounds(:,1)') .* rand(pop_size, 2);
 func_calls = pop_size;
 
 %% Initial plotting
-[X, Y] = meshgrid(linspace(bounds(1,1), bounds(1,2), 100), linspace(bounds(2,1), bounds(2,2), 100));
-Z = arrayfun(@(x, y) ackley([x, y]), X, Y);
-figure; hold on; grid on;
-contour(X, Y, Z, 20);
-xlabel('x_1'); ylabel('x_2'); title('Differential Evolution');
+[X1, X2] = meshgrid(linspace(-7, 7, 100), linspace(-7, 7, 100));
+F_X = arrayfun(@(x1, x2) ackley([x1, x2]), X1, X2);
+hold on; grid on;
+contour(X1, X2, F_X, 20);
+xlabel('x_1'); ylabel('x_2'); title('Differential Evolution (DE)');
 
 % Initial population
 scatter(pop(:,1), pop(:,2), 25, 'ko', 'filled');
@@ -76,9 +76,9 @@ while iter < max_iter && func_calls < max_func_calls
 end
 
 % Optimum plotting
-scatter(best_solution(1), best_solution(2), 50, 'bo', 'filled');
+scatter(best_solution(1), best_solution(2), 35, 'bo', 'filled');
 text(best_solution(1), best_solution(2) + 0.1, 'Optimum','FontWeight','bold');
 
 %% Printing
 fprintf('Optimization completed in %d iterations and %d function calls.\n', iter, func_calls);
-fprintf('Optimum: x = [%.4f, %.4f], f(x) = %.4f\n', best_solution(1), best_solution(2), best_fitness);
+fprintf('Optimum: x = [%f, %f], f(x) = %f\n', best_solution(1), best_solution(2), best_fitness);
