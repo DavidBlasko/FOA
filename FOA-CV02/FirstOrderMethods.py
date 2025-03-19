@@ -33,6 +33,7 @@ def golden_section_search(f, x, d, a=0, b=1, tol=1e-5):
 def gradient_descent_optimal_stepsize(x0, max_iter=100, tol=1e-2): # optimal step size with golden search
     x = np.array(x0)
     trajectory = [x.copy()]
+    iter_count = 0
     
     for k in range(max_iter):
         grad = gradient(x)
@@ -41,12 +42,14 @@ def gradient_descent_optimal_stepsize(x0, max_iter=100, tol=1e-2): # optimal ste
         alpha = golden_section_search(rosenbrock, x, -grad)  # optimal step with golden search
         x = x - (alpha * grad)
         trajectory.append(x.copy())
+        iter_count = k + 1
     
-    return np.array(trajectory)
+    return np.array(trajectory), iter_count
 
 def gradient_descent_decaying_stepsize(x0, max_iter=100, tol=1e-2): # decaying step size
     x = np.array(x0)
     trajectory = [x.copy()]
+    iter_count = 0
     
     for k in range(max_iter):
         grad = gradient(x)
@@ -55,8 +58,9 @@ def gradient_descent_decaying_stepsize(x0, max_iter=100, tol=1e-2): # decaying s
         alpha = 0.9 ** k  # decaying step
         x = x - (alpha * (grad / np.linalg.norm(grad)))
         trajectory.append(x.copy())
+        iter_count = k + 1
     
-    return np.array(trajectory)
+    return np.array(trajectory), iter_count
 
 def conjugate_gradient(x0, max_iter=100, tol=1e-2): # conjugate gradient method
     x = np.array(x0)
@@ -79,7 +83,7 @@ def conjugate_gradient(x0, max_iter=100, tol=1e-2): # conjugate gradient method
     
     return np.array(trajectory), iter_count
 
-def plot_trajectories(traj_gdo, traj_gdd, traj_cg, cg_iters):
+def plot_trajectories(traj_gdo, gdo_iters, traj_gdd, gdd_iters, traj_cg, cg_iters):
     x = np.linspace(-2, 2, 100)
     y = np.linspace(-1, 3, 100)
     X, Y = np.meshgrid(x, y)
@@ -87,8 +91,8 @@ def plot_trajectories(traj_gdo, traj_gdd, traj_cg, cg_iters):
     
     plt.figure(figsize=(8, 6))
     plt.contour(X, Y, Z, levels=np.logspace(-1, 3, 20), cmap='jet')
-    plt.plot(traj_gdo[:, 0], traj_gdo[:, 1], 'ro-', label='Gradient Optimal Step Descent')
-    plt.plot(traj_gdd[:, 0], traj_gdd[:, 1], 'go-', label='Gradient Decaying Step Descent')
+    plt.plot(traj_gdo[:, 0], traj_gdo[:, 1], 'ro-', label=f'Gradient Optimal Step Descent ({gdo_iters} iterations)')
+    plt.plot(traj_gdd[:, 0], traj_gdd[:, 1], 'go-', label=f'Gradient Decaying Step Descent ({gdd_iters} iterations)')
     plt.plot(traj_cg[:, 0], traj_cg[:, 1], 'bo-', label=f'Conjugate Gradient ({cg_iters} iterations)')
     plt.legend()
     plt.xlabel('$x_1$')
@@ -97,7 +101,7 @@ def plot_trajectories(traj_gdo, traj_gdd, traj_cg, cg_iters):
     plt.show()
 
 x0 = [-1, -1]
-traj_gdo = gradient_descent_optimal_stepsize(x0)
-traj_gdd = gradient_descent_decaying_stepsize(x0)
+traj_gdo, gdo_iters = gradient_descent_optimal_stepsize(x0)
+traj_gdd, gdd_iters = gradient_descent_decaying_stepsize(x0)
 traj_cg, cg_iters = conjugate_gradient(x0)
-plot_trajectories(traj_gdo, traj_gdd, traj_cg, cg_iters)
+plot_trajectories(traj_gdo, gdo_iters, traj_gdd, gdd_iters, traj_cg, cg_iters)
